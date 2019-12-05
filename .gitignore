@@ -23,3 +23,8 @@
 hs_err_pid*
 
 *secrets.properties
+
+build/
+gradle/
+.gradle/
+.idea/

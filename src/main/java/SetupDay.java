@@ -22,13 +22,14 @@ public class SetupDay {
 
         Map y = new HashMap();
         y.put("cookie", readLine("src/main/resources/secrets.properties"));
-        List<String> puzzleInput = get("https://adventofcode.com/"+year+"/day/"+ Integer.parseInt(day) + "/input", y);
-        writeToFile(resourcesFilePrefix+ ".txt", String.join("\n", puzzleInput));
 
         String baseKotlin = readLine(base).replaceAll("Base", "Day"+day);
         String baseKotlinTest = readLine(baseTest).replaceAll("Base", "Day"+day);
         writeToFile(folder + "Day"+day+".kt",baseKotlin);
         writeToFile(testFolder + "Day"+day+"Test.kt", baseKotlinTest);
+
+        List<String> puzzleInput = get("https://adventofcode.com/"+year+"/day/"+ Integer.parseInt(day) + "/input", y);
+        writeToFile(resourcesFilePrefix+ ".txt", String.join("\n", puzzleInput));
     }
 
     static List<String> get(String urlToScrape, Map<String,String> headers) throws Exception {
