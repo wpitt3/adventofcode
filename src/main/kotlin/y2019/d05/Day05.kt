@@ -1,16 +1,19 @@
 package y2019.d05
 
 class Day05() {
-    fun runWholeSystem(instructions: String): Int {
+    fun runWholeSystem(instructions: String, input: Int): Int {
         var a: MutableList<Int> = instructions.split(",").map({x -> Integer.parseInt(x)}).toMutableList()
-        return run(a)[0]
+        return run(a, input)[0]
     }
 
-    fun run(instructions: MutableList<Int>): List<Int> {
+    fun run(instructions: MutableList<Int>, input: Int): List<Int> {
         var index: Int = 0
         while(true) {
+//            println("index " + index)
             val optCode: Int =  instructions[index]%100
+//            println("opt " +optCode)
             val modes: List<Int> = takeModesFromInstruction(instructions[index])
+
             if (optCode == 1) {
                 instructions[getInstIndex(instructions, modes, index, 3)] =
                     instructions[getInstIndex(instructions, modes, index, 1)] + instructions[getInstIndex(instructions, modes, index, 2)]
@@ -20,11 +23,26 @@ class Day05() {
                     instructions[getInstIndex(instructions, modes, index, 1)] * instructions[getInstIndex(instructions, modes, index, 2)]
                 index += 4
             } else if (optCode == 3) {
-                instructions[getInstIndex(instructions, modes, index, 1)] = 1
+                instructions[getInstIndex(instructions, modes, index, 1)] = input
                 index += 2
             } else if (optCode == 4) {
                 println("diagnostics " + instructions[getInstIndex(instructions, modes, index, 1)])
                 index += 2
+            } else if (optCode == 5) {
+                val ifTrueJumpValue : Int = instructions[getInstIndex(instructions, modes, index, 1)]
+                instructions[getInstIndex(instructions, modes, index, 2)]
+                index = if (ifTrueJumpValue != 0) instructions[getInstIndex(instructions, modes, index, 2)] else (index + 3)
+            } else if (optCode == 6) {
+                val ifFalseJumpValue : Int = instructions[getInstIndex(instructions, modes, index, 1)]
+                index = if (ifFalseJumpValue == 0) instructions[getInstIndex(instructions, modes, index, 2)] else (index + 3)
+            } else if (optCode == 7) {
+                val isLessThan : Boolean = instructions[getInstIndex(instructions, modes, index, 1)] < instructions[getInstIndex(instructions, modes, index, 2)]
+                instructions[getInstIndex(instructions, modes, index, 3)] = if (isLessThan) 1 else 0
+                index += 4
+            } else if (optCode == 8) {
+                val isEqualTo : Boolean = instructions[getInstIndex(instructions, modes, index, 1)] == instructions[getInstIndex(instructions, modes, index, 2)]
+                instructions[getInstIndex(instructions, modes, index, 3)] = if (isEqualTo) 1 else 0
+                index += 4
             } else if (optCode == 99) {
                 return instructions
             } else {
