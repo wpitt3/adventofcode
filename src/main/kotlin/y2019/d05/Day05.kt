@@ -9,9 +9,7 @@ class Day05() {
     fun run(instructions: MutableList<Int>, input: Int): List<Int> {
         var index: Int = 0
         while(true) {
-//            println("index " + index)
             val optCode: Int =  instructions[index]%100
-//            println("opt " +optCode)
             val modes: List<Int> = takeModesFromInstruction(instructions[index])
 
             if (optCode == 1) {

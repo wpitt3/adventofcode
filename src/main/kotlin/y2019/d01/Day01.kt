@@ -1,11 +1,5 @@
 package y2019.d01
 
-import java.io.File
-
-fun main() {
-    val lines: List<String>  = File("src/main/resources/y2019d01.txt").readLines()
-}
-
 class Day01() {
     fun getFuelRequired(mass: Int):Int {
         return (mass-mass%3)/3-2
