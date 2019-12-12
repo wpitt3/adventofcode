@@ -1,4 +1,5 @@
-import Day10
+package y2019.d10
+
 import kotlin.test.assertEquals
 import org.junit.Test as test
 
