@@ -2,8 +2,21 @@ import java.io.File
 
 fun main (){
     val lines = File("src/main/resources/y2019d14.txt").readLines()
-    val ingredients = Day14().readLines(lines)
-    println(Day14().countOreForFuel(ingredients))
+    val formulas = Day14().readLines(lines)
+    println(Day14().countOreForFuel(formulas, 1))
+    val maxOre = 1000000000000
+
+    var index: Long = 10000000
+    var step: Long = index/2
+    (0..40).forEach{
+        if(Day14().countOreForFuel(formulas, index) > maxOre) {
+            index -= step
+        } else {
+            step /= 2
+            index += step
+        }
+    }
+    println(index)
 }
 
 class Day14() {
@@ -19,69 +32,75 @@ class Day14() {
         var ingredients = formula[0].trim().split(",")
             .map{
                 val parts = it.trim().split(" ");
-                Ingredient(Integer.parseInt(parts[0]), parts[1])
+                Ingredient(Integer.parseInt(parts[0]).toLong(), parts[1])
             }
-        return mapOf(Pair(Ingredient(Integer.parseInt(result[0]), result[1]), ingredients))
+        return mapOf(Pair(Ingredient(Integer.parseInt(result[0]).toLong(), result[1]), ingredients))
     }
 
-    fun countOreForFuel(ingredientsList: Map<Ingredient, List<Ingredient>>): Int {
-        var ingredients: List<Ingredient> = getIngredients(ingredientsList, Ingredient(1, "FUEL"), "")
+    fun countOreForFuel(formulas: Map<Ingredient, List<Ingredient>>, fuelCount: Long): Long {
+        var ingredients: Wrapper = getIngredients(formulas, Ingredient(fuelCount, "FUEL"), listOf())
 
-//        ingredients = resolveUntilComplete(ingredientsList, ingredients)
-//        ingredients = getIngredientsAndFlatten(ingredientsList, ingredients, "A")
-        return recurse(ingredientsList, ingredients)
+        return resolveUntilComplete(formulas, ingredients).required.map{it.count}.sum()
     }
 
-    fun recurse(ingredientsList: Map<Ingredient, List<Ingredient>>, ingredientsx: List<Ingredient>): Int {
-        var ingredients = resolveUntilComplete(ingredientsList, ingredientsx)
-        if (ingredients.all{it.name == "ORE"}) {
-            return ingredients.map{it.count}.sum()
-        }
-
-        return ingredients.filter{it.name != "ORE"}.map{
-            val newIngredients = getIngredientsAndFlatten(ingredientsList, ingredients, it.name)
-            recurse(ingredientsList, newIngredients)
-        }.min() !!
-    }
-
-    fun resolveUntilComplete(ingredientsList: Map<Ingredient, List<Ingredient>>, ingredientsX: List<Ingredient>): List<Ingredient> {
+    fun resolveUntilComplete(formulas: Map<Ingredient, List<Ingredient>>, ingredientsX: Wrapper): Wrapper {
         var ingredients = ingredientsX
-        var prevIngredients: List<Ingredient> = listOf()
-        while(ingredients.any{it.name != "ORE"} && prevIngredients != ingredients) {
+        var prevIngredients: Wrapper = Wrapper(listOf(), listOf())
+        while(ingredients.required.any{it.name != "ORE"} && prevIngredients.required != ingredients.required) {
             prevIngredients = ingredients
-            ingredients = getIngredientsAndFlatten(ingredientsList, ingredients, "")
+            ingredients = getIngredientsAndFlatten(formulas, ingredients)
         }
         return ingredients
     }
 
-    fun getIngredientsAndFlatten(ingredientsList: Map<Ingredient, List<Ingredient>>, ingredients: List<Ingredient>, wastefulIngredient: String): List<Ingredient> {
-        return ingredients.map{ product ->
-            getIngredients(ingredientsList, product, wastefulIngredient)
-        }.flatten().toMutableList().fold(mutableListOf<Ingredient>()){ a, b ->
-            if (a.any{ it.name == b.name }) {
-                a.map {
-                    if( it.name == b.name) Ingredient(b.count+it.count, b.name) else it
-                }.toMutableList()
-            } else {
-                a.add(b); a
+    fun getIngredientsAndFlatten(formulas: Map<Ingredient, List<Ingredient>>, ingredients: Wrapper): Wrapper {
+        var required: MutableList<Ingredient> = ingredients.required.toMutableList()
+        var spare: MutableList<Ingredient> = ingredients.spare.toMutableList()
+
+        ingredients.required.filter{ it.name != "ORE" }.forEach { product ->
+            val result: Wrapper = getIngredients(formulas, product, spare)
+            required = removeIngredient(required, product)
+            result.required.forEach{
+                required = addIngredient(required, it)
             }
+            spare = reduceList(result.spare.toMutableList())
         }
+        return Wrapper(required.toList(), spare.toList())
     }
 
-    fun getIngredients(ingredientsList: Map<Ingredient, List<Ingredient>>, ingredient: Ingredient, wastefulIngredient: String): List<Ingredient> {
+    fun getIngredients(formulas: Map<Ingredient, List<Ingredient>>, ingredient: Ingredient, spare: List<Ingredient>): Wrapper {
         if (ingredient.name == "ORE")
-            return listOf(ingredient)
+            return Wrapper(listOf(ingredient), listOf())
 
-        val formulaResult = getIngredientForName(ingredientsList, ingredient.name)
-        val ingredients: List<Ingredient> = getIngredientsForName(ingredientsList, ingredient.name)
-        if (ingredient.count%formulaResult.count!=0) {
-            if(ingredient.name == wastefulIngredient) {
-                val multiplier = Math.ceil((ingredient.count).toDouble() / (formulaResult.count).toDouble()).toInt()
-                return ingredients.map { Ingredient(it.count * multiplier, it.name) }
-            }
-            return listOf(ingredient)
+        val formulaKey = getIngredientForName(formulas, ingredient.name)
+        val ingredients: List<Ingredient> = getIngredientsForName(formulas, ingredient.name)
+        val spareIngredientCount = spare.filter{it.name == formulaKey.name}.map{it.count}.getOrElse(0, {0})
+        val multiplier: Long = (Math.ceil((ingredient.count.toDouble()-spareIngredientCount)/formulaKey.count.toDouble())).toLong()
+        if ((ingredient.count-spareIngredientCount) % formulaKey.count == 0.toLong()) {
+            return Wrapper(ingredients.map{ Ingredient(it.count*multiplier, it.name)}, spare + Ingredient(-spareIngredientCount, formulaKey.name))
         }
-        return ingredients.map{ Ingredient(it.count*ingredient.count/formulaResult.count, it.name)}
+        return Wrapper(ingredients.map{ Ingredient(it.count*multiplier, it.name)},
+            spare + Ingredient(formulaKey.count*multiplier-ingredient.count, formulaKey.name))
+    }
+
+    fun removeIngredient(list: List<Ingredient>, ingredient: Ingredient): MutableList<Ingredient> {
+        return reduceList(list.toMutableList() + minusIngredient(ingredient))
+    }
+
+    fun addIngredient(list: MutableList<Ingredient>, ingredient: Ingredient): MutableList<Ingredient> {
+        return reduceList(list.toMutableList() + ingredient)
+    }
+
+    fun minusIngredient(ingredient: Ingredient): Ingredient {
+        return Ingredient(-ingredient.count, ingredient.name)
+    }
+
+    fun reduceList(list: List<Ingredient>): MutableList<Ingredient> {
+        return list
+            .groupBy { it.name }
+            .map{x -> Ingredient(x.value.map{it.count}.sum(), x.key)}
+            .filter{ it.count != 0.toLong() }
+            .toMutableList()
     }
 
     fun getIngredientsForName(ingredients: Map<Ingredient, List<Ingredient>>, ingredientName: String): List<Ingredient> {
@@ -96,8 +115,18 @@ class Day14() {
     }
 }
 
-data class Ingredient(var countX: Int, var nameX: String) {
-    var count: Int
+class Wrapper(var requiredX: List<Ingredient>, var spareX: List<Ingredient>) {
+    var required: List<Ingredient>
+    var spare: List<Ingredient>
+
+    init{
+        this.required = requiredX
+        this.spare = spareX
+    }
+}
+
+data class Ingredient(var countX: Long, var nameX: String) {
+    var count: Long
     var name: String
 
     init{
@@ -108,6 +137,5 @@ data class Ingredient(var countX: Int, var nameX: String) {
     override fun toString(): String {
         return "$count $name"
     }
-
 
 }

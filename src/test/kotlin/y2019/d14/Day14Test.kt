@@ -55,7 +55,7 @@ class Day14Test{
     fun calculateOreToFuelOneStep() {
         val ingredients = mapOf(Pair(Ingredient(1, "FUEL"), listOf(Ingredient(10, "ORE"))))
 
-        val result: Int = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients)
         assertEquals(10, result)
     }
 
@@ -66,7 +66,7 @@ class Day14Test{
             Pair(Ingredient(1, "A"), listOf(Ingredient(2, "ORE")))
         )
 
-        val result: Int = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients)
         assertEquals(2, result)
     }
 
@@ -77,7 +77,7 @@ class Day14Test{
             Pair(Ingredient(1, "A"), listOf(Ingredient(2, "ORE")))
         )
 
-        val result: Int = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients)
         assertEquals(4, result)
     }
 
@@ -88,7 +88,7 @@ class Day14Test{
             Pair(Ingredient(2, "A"), listOf(Ingredient(2, "ORE")))
         )
 
-        val result: Int = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients)
         assertEquals(2, result)
     }
 
@@ -103,7 +103,7 @@ class Day14Test{
             "7 A, 1 E => 1 FUEL"
         )
         val ingredients = Day14().readLines(lines)
-        val result: Int = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients)
         assertEquals(31, result)
     }
 
@@ -113,8 +113,10 @@ class Day14Test{
             "1 B, 1 C => 1 FUEL"
         )
         val ingredients = Day14().readLines(lines)
-        val result = Day14().getIngredientsAndFlatten(ingredients, listOf(Ingredient(1, "FUEL")), "")
-        assertEquals(listOf(Ingredient(1, "B"), Ingredient(1, "C")), result)
+
+        val wrapper = Wrapper(listOf(Ingredient(1, "FUEL")), listOf())
+        val result = Day14().getIngredientsAndFlatten(ingredients, wrapper)
+        assertEquals(listOf(Ingredient(1, "B"), Ingredient(1, "C")), result.required)
     }
 
     @test
@@ -123,18 +125,87 @@ class Day14Test{
             "1 B => 5 A"
         )
         val ingredients = Day14().readLines(lines)
-        val result = Day14().getIngredientsAndFlatten(ingredients, listOf(Ingredient(4, "A")), "")
-        assertEquals(listOf(Ingredient(4, "A")), result)
+        val wrapper = Wrapper(listOf(Ingredient(4, "A")), listOf())
+        val result = Day14().getIngredientsAndFlatten(ingredients, wrapper)
+        assertEquals(listOf(Ingredient(1, "B")), result.required)
+        assertEquals(listOf(Ingredient(1, "A")), result.spare)
     }
 
     @test
-    fun getIngredientsWithNoExactMatchAndWaste() {
+    fun getIngredientsWithNoExactMatchWithMultiplier() {
         val lines = listOf(
             "1 B => 5 A"
         )
         val ingredients = Day14().readLines(lines)
-        val result = Day14().getIngredientsAndFlatten(ingredients, listOf(Ingredient(4, "A")), "A")
-        assertEquals(listOf(Ingredient(1, "B")), result)
+        val wrapper = Wrapper(listOf(Ingredient(7, "A")), listOf())
+        val result = Day14().getIngredientsAndFlatten(ingredients, wrapper)
+        assertEquals(listOf(Ingredient(2, "B")), result.required)
+        assertEquals(listOf(Ingredient(3, "A")), result.spare)
     }
 
+    @test
+    fun getIngredientsWithNoExactMatchAndToSpare() {
+        val lines = listOf(
+            "1 B => 5 A"
+        )
+        val ingredients = Day14().readLines(lines)
+        val wrapper = Wrapper(listOf(Ingredient(3, "A")), listOf(Ingredient(1, "A")))
+        val result = Day14().getIngredientsAndFlatten(ingredients, wrapper)
+        assertEquals(listOf(Ingredient(1, "B")), result.required)
+        assertEquals(listOf(Ingredient(3, "A")), result.spare)
+    }
+
+    @test
+    fun getIngredientsUseSpareIfPossible() {
+        // 7 - 2 / 5 = 1
+
+        val lines = listOf(
+            "1 B => 5 A"
+        )
+        val ingredients = Day14().readLines(lines)
+        val wrapper = Wrapper(listOf(Ingredient(7, "A")), listOf(Ingredient(2, "A")))
+        val result = Day14().getIngredientsAndFlatten(ingredients, wrapper)
+        assertEquals(listOf(Ingredient(1, "B")), result.required)
+        assertEquals(listOf(), result.spare)
+    }
+
+    @test
+    fun getIngredientsWithMultiplyUseSpareIfPossible() {
+        // 12 - 2 / 5 = 2
+        val lines = listOf(
+            "1 B => 5 A"
+        )
+        val ingredients = Day14().readLines(lines)
+        val wrapper = Wrapper(listOf(Ingredient(12, "A")), listOf(Ingredient(2, "A")))
+        val result = Day14().getIngredientsAndFlatten(ingredients, wrapper)
+        assertEquals(listOf(Ingredient(2, "B")), result.required)
+        assertEquals(listOf(), result.spare)
+    }
+
+    @test
+    fun getIngredientsWithMultiplyDontUseAllOfSpare() {
+        // 12 - 2 / 5 = 2
+        val lines = listOf(
+            "1 B => 5 A"
+        )
+        val ingredients = Day14().readLines(lines)
+        val wrapper = Wrapper(listOf(Ingredient(12, "A")), listOf(Ingredient(3, "A")))
+        val result = Day14().getIngredientsAndFlatten(ingredients, wrapper)
+        assertEquals(listOf(Ingredient(2, "B")), result.required)
+        assertEquals(listOf(Ingredient(1, "A")), result.spare)
+    }
+
+    @test
+    fun reduceListMergeSame() {
+        val list = mutableListOf(Ingredient(3, "A"), Ingredient(1, "A"), Ingredient(3, "B"))
+        val result = Day14().reduceList(list)
+        assertEquals(listOf(Ingredient(4, "A"), Ingredient(3, "B")), result)
+    }
+
+    @test
+    fun reduceListRemove0() {
+        val list = mutableListOf(Ingredient(3, "A"), Ingredient(-3, "A"), Ingredient(3, "B"))
+        val result = Day14().reduceList(list)
+        assertEquals(listOf(Ingredient(3, "B")), result)
+    }
 }
