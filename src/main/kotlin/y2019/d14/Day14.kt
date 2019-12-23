@@ -137,5 +137,4 @@ data class Ingredient(var countX: Long, var nameX: String) {
     override fun toString(): String {
         return "$count $name"
     }
-
 }

@@ -55,7 +55,7 @@ class Day14Test{
     fun calculateOreToFuelOneStep() {
         val ingredients = mapOf(Pair(Ingredient(1, "FUEL"), listOf(Ingredient(10, "ORE"))))
 
-        val result: Long = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients, 1.toLong())
         assertEquals(10, result)
     }
 
@@ -66,7 +66,7 @@ class Day14Test{
             Pair(Ingredient(1, "A"), listOf(Ingredient(2, "ORE")))
         )
 
-        val result: Long = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients, 1.toLong())
         assertEquals(2, result)
     }
 
@@ -77,7 +77,7 @@ class Day14Test{
             Pair(Ingredient(1, "A"), listOf(Ingredient(2, "ORE")))
         )
 
-        val result: Long = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients, 1L)
         assertEquals(4, result)
     }
 
@@ -88,7 +88,7 @@ class Day14Test{
             Pair(Ingredient(2, "A"), listOf(Ingredient(2, "ORE")))
         )
 
-        val result: Long = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients, 1L)
         assertEquals(2, result)
     }
 
@@ -103,7 +103,7 @@ class Day14Test{
             "7 A, 1 E => 1 FUEL"
         )
         val ingredients = Day14().readLines(lines)
-        val result: Long = Day14().countOreForFuel(ingredients)
+        val result: Long = Day14().countOreForFuel(ingredients, 1L)
         assertEquals(31, result)
     }
 
