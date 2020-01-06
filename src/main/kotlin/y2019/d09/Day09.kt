@@ -1,3 +1,5 @@
+package y2019.d09
+
 import y2019.IntcodeProcessor
 import java.io.File
 
@@ -13,8 +15,9 @@ fun runInstructions(lines: List<String>, input: Long): MutableList<Long> {
     var result = mutableListOf<Long>()
 
     val processor = IntcodeProcessor(instructions)
-    processor.callNextAmp = {it -> result.add(it); -1}
-    processor.run(input)
+    processor.callOutput = { it -> result.add(it)}
+    processor.callInput = { input }
+    processor.run()
 
     return result
 }

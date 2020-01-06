@@ -3,14 +3,15 @@ package y2019
 class IntcodeProcessor(var instructions: MutableList<Long>) {
     var inputIndex: Int = 0
     var index: Int = 0
-    var callNextAmp: (x: Long) -> Long = {it}
+    var callInput: () -> Long = {1}
+    var callOutput: (x: Long) -> Unit = {}
     var relativeBase: Int = 0
 
     init {
         instructions.addAll(MutableList(1000,{0L}))
     }
 
-    fun run(input: Long) {
+    fun run() {
         while(true) {
             val optCode: Int =  (instructions[index]%100).toInt()
             val modes: List<Int> = takeModesFromInstruction(instructions[index])
@@ -27,14 +28,14 @@ class IntcodeProcessor(var instructions: MutableList<Long>) {
                 index += 4
             } else if (optCode == 3) {
                 // get input
-                instructions[getInstIndex(instructions, modes, index, 1)] = input
+                instructions[getInstIndex(instructions, modes, index, 1)] = callInput()
                 inputIndex++
                 index += 2
             } else if (optCode == 4) {
                 // put output
                 val toOutput = instructions[getInstIndex(instructions, modes, index, 1)]
                 index += 2
-                callNextAmp(toOutput)
+                callOutput(toOutput)
             } else if (optCode == 5) {
                 // jump if true
                 val ifTrueJumpValue : Long = instructions[getInstIndex(instructions, modes, index, 1)]

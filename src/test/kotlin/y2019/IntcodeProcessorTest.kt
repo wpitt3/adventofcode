@@ -38,7 +38,7 @@ class IntcodeProcessorTest{
     @test
     fun relativebaseCanBeModified() {
         var processor = IntcodeProcessor(mutableListOf(109,19, 99))
-        processor.run(1)
+        processor.run()
         assertEquals(processor.relativeBase, 19)
     }
 
@@ -56,9 +56,19 @@ class IntcodeProcessorTest{
         assertEquals(listOf<Long>(1125899906842624), runIntcodeAndGetOutput(mutableListOf(104,1125899906842624,99), 1))
     }
 
+    @test
+    fun inputCanBeSetAsCallback() {
+        var result = mutableListOf<Long>()
+
+        runIntcodeWithCallbacks(mutableListOf(3, 6, 4, 6, 99), {5}, { result.add(it)})
+
+        assertEquals(result, mutableListOf<Long>(5))
+    }
+
     fun runIntcodeAndGetInstructions(instructions: MutableList<Long>, input: Long): MutableList<Long> {
         var processor = IntcodeProcessor(instructions)
-        processor.run(input)
+        processor.callInput = { input }
+        processor.run()
         val endIndex = processor.instructions.lastIndexOf(99)
         return processor.instructions.subList(0, endIndex+1)
     }
@@ -66,8 +76,16 @@ class IntcodeProcessorTest{
     fun runIntcodeAndGetOutput(instructions: MutableList<Long>, input: Long): MutableList<Long> {
         var processor = IntcodeProcessor(instructions)
         var result = mutableListOf<Long>()
-        processor.callNextAmp = {it -> result.add(it); 1}
-        processor.run(input)
+        processor.callOutput = { result.add(it)}
+        processor.callInput = { input }
+        processor.run()
         return result
+    }
+
+    fun runIntcodeWithCallbacks(instructions: MutableList<Long>, callInput: () -> Long, callOutput: (x: Long) -> Unit): Unit {
+        var processor = IntcodeProcessor(instructions)
+        processor.callOutput = callOutput
+        processor.callInput = callInput
+        processor.run()
     }
 }
