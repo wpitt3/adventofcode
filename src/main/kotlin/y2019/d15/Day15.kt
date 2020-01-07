@@ -8,6 +8,8 @@ fun main() {
     var instructions: MutableList<Long> = lines[0].split(",").map({x -> (x).toLong()}).toMutableList()
     val robot = Robot(instructions)
     robot.run()
+    println(robot.findOxygen())
+    println(robot.fillWithOxygen())
 }
 
 class Robot(instructions: MutableList<Long>) {
@@ -24,6 +26,47 @@ class Robot(instructions: MutableList<Long>) {
         processor.callOutput = { it -> output.add(it)}
         processor.callInput = { if (output.isEmpty()) 1 else calculateNextDirect(output)}
         processor.run()
+    }
+
+    fun findOxygen():Int {
+        var cursors = mutableListOf(Pair(size/2, size/2))
+        var counter = 0
+        while(cursors.all{grid[it.first][it.second] != 2}) {
+            cursors = cursors.map { findNextLocations(it, 2) }.flatten().toMutableList()
+            cursors.filter{grid[it.first][it.second] != 2}.forEach{ grid[it.first][it.second] = 3 }
+            counter++
+        }
+        println(cursors.filter{grid[it.first][it.second] == 2})
+        return counter
+    }
+
+    fun fillWithOxygen():Int {
+        var cursors = mutableListOf(Pair(43, 41))
+        var counter = 0
+        while(cursors.isNotEmpty()) {
+//            printGrid()
+            cursors = cursors.map { findNextLocations(it, 3) }.flatten().toMutableList()
+            cursors.forEach{ grid[it.first][it.second] = 2 }
+            counter++
+        }
+        return counter -1
+    }
+
+    fun findNextLocations(location: Pair<Int, Int>, allowed: Int): List<Pair<Int, Int>> {
+        var nextPositions: MutableList<Pair<Int, Int>> = mutableListOf()
+        if ( grid[location.first+1][location.second] == 1 || grid[location.first+1][location.second] == allowed) {
+            nextPositions.add(Pair(location.first+1, location.second))
+        }
+        if ( grid[location.first-1][location.second] == 1 || grid[location.first-1][location.second] == allowed) {
+            nextPositions.add(Pair(location.first-1, location.second))
+        }
+        if ( grid[location.first][location.second+1] == 1 || grid[location.first][location.second+1] == allowed) {
+            nextPositions.add(Pair(location.first, location.second + 1))
+        }
+        if ( grid[location.first][location.second-1] == 1 || grid[location.first][location.second-1] == allowed) {
+            nextPositions.add(Pair(location.first, location.second-1))
+        }
+        return nextPositions
     }
 
     fun calculateNextDirect(output: MutableList<Long>): Long {
