@@ -8,7 +8,7 @@ class IntcodeProcessor(var instructions: MutableList<Long>) {
     var relativeBase: Int = 0
 
     init {
-        instructions.addAll(MutableList(1000,{0L}))
+        instructions.addAll(MutableList(2000,{0L}))
     }
 
     fun run() {
