@@ -11,6 +11,14 @@ class IntcodeProcessor(var instructions: MutableList<Long>) {
         instructions.addAll(MutableList(2000,{0L}))
     }
 
+    fun reset (instructionsX: MutableList<Long>) {
+        instructions = instructionsX
+        instructions.addAll(MutableList(2000,{0L}))
+        inputIndex = 0
+        index = 0
+        relativeBase = 0
+    }
+
     fun run() {
         while(true) {
             val optCode: Int =  (instructions[index]%100).toInt()
