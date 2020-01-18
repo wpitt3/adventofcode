@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class SetupDay {
     public static void main(String[] args) throws Exception {
-        String day = "17";
+        String day = "25";
         String year = "2019";
 
         String folder = "src/main/kotlin/y"+year+"/d"+day+"/";
