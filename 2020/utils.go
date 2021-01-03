@@ -28,7 +28,6 @@ func toIntArray(input []string) []int {
 	result := make([]int, len(input))
 	for i, x := range input {
 		val, err := strconv.Atoi(x)
-
 		if err != nil { panic(err) }
 		result[i] = val
 	}
@@ -47,14 +46,45 @@ func split(input string, delimiter string, remove string) []string {
 	return strings.Split(input, delimiter)
 }
 
-//func split(input string, delimiters []string, remove []string) []string {
-//	for _, x := range remove {
-//		input = strings.Replace(input, x, "", -1)
-//	}
-//
-//	for _, x := range delimiters {
-//		input = strings.Replace(input, x, "|", -1)
-//	}
-//
-//	return strings.Split(input, "|")
-//}
+func reverseIntSlice(original []int) [] int {
+	length := len(original)
+	reversed := make([]int, length)
+	for i, _ := range original {
+		reversed[i] = original[length - i - 1]
+	}
+	return reversed
+}
+
+func rotateIntSlice(original []int, rotation int) [] int {
+	length := len(original)
+	newIntSlice := make([]int, length)
+	for i, _ := range original {
+		newIntSlice[i] = original[(i + rotation) % length]
+	}
+	return newIntSlice
+}
+
+func intSliceContains(original []int, value int) bool {
+	return intIndexOf(original, value) != -1
+}
+
+func intIndexOf(original []int, value int) int {
+	for i, _ := range original {
+		if original[i] == value {
+			return i
+		}
+	}
+	return -1
+}
+
+func parseStoI(original string) int {
+	val, err := strconv.ParseInt(original, 10, 32)
+	if err != nil { panic(err) }
+	return int(val)
+}
+
+func parseBtoI(original string) int {
+	val, err := strconv.ParseInt(original, 2, 32)
+	if err != nil { panic(err) }
+	return int(val)
+}
