@@ -11,7 +11,7 @@ import (
 //type StringMap map[string]string
 
 func day4() {
-	lines, err := readFile("4")
+	lines, err := readFile("../resources/y2020d04.txt")
 	if err != nil { panic(err) }
 
 	passports := calcPassports(lines)

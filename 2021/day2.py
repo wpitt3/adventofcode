@@ -15,4 +15,23 @@ for line in lines:
         y += distance
     elif (direction == 'up'):
         y -= distance
+
+print(x*y)
+
+
+y = 0
+x = 0
+aim = 0
+
+for line in lines:
+    direction, distance = line.split(' ')
+    distance = int(distance)
+    if (direction == 'forward'):
+        x += distance
+        y += aim * distance
+    elif (direction == 'down'):
+        aim += distance
+    elif (direction == 'up'):
+        aim -= distance
+
 print(x*y)

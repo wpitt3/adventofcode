@@ -6,7 +6,7 @@ import (
 )
 
 func day16() {
-	lines, err := readFile("16")
+	lines, err := readFile("../resources/y2020d16.txt")
 	if err != nil { panic(err) }
 
 	rules := parseRules(lines)

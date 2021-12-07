@@ -7,7 +7,7 @@ import (
 
 
 func day1() {
-	lines, err := readFile("1a")
+	lines, err := readFile("../resources/y2020d01.txt")
 	if err != nil { panic(err) }
 
 	values := toIntArray(lines)
