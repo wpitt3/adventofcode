@@ -1,6 +1,5 @@
 from FileReader import FileReader
 
-
 crabs = FileReader().readLineAsInts('7')
 
 min = float('inf')
