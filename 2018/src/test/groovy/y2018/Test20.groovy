@@ -1,7 +1,7 @@
-import spock.lang.Specification
+//import spock.lang.Specification
 import y2018.D20a
 
-class Test20 extends Specification {
+class Test20 {//extends Specification {
 
   def setup() {
 

@@ -8,7 +8,6 @@ class FileReader:
         file = f.read()
         return file.split('\n')
 
-
     def readLinesAsInts(self, name):
         x = self.readLines(name)
         return [int(i) for i in x]
