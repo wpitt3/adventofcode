@@ -1,3 +1,4 @@
+
 import spock.lang.Specification
 import y2018.D20a
 
@@ -48,7 +49,11 @@ class Test20 extends Specification {
       result.east.north.south.west == result
   }
 
+<<<<<<< HEAD
   void "Nested or"() {
+=======
+  void "Double node or"() {
+>>>>>>> d42a49ddc1eac3071a57f7a4e579a1601e9672b5
     when:
       def result = D20a.createMap("E(S|N(N|E))")
 
@@ -57,8 +62,11 @@ class Test20 extends Specification {
       result.east.south.west == null
       result.east.south.east == null
       result.east.south.south == null
+<<<<<<< HEAD
       result.east.north.north != null
       result.east.north.east != null
+=======
+>>>>>>> d42a49ddc1eac3071a57f7a4e579a1601e9672b5
       result.east.north.south.west == result
       result.east.north.west == null
       result.east.north.north != null
@@ -72,6 +80,7 @@ class Test20 extends Specification {
     then:
       result.east.south.east.west.north.west == result
       result.east.north.east.west.south.west == result
+<<<<<<< HEAD
       result.north == null
       result.south == null
       result.west == null
@@ -171,5 +180,7 @@ class Test20 extends Specification {
 
     then:
       result == ["E", [or:["S", ["N", [or:["N", "E"]]], "E"]], "E", [or:["E", "W"]]]
+=======
+>>>>>>> d42a49ddc1eac3071a57f7a4e579a1601e9672b5
   }
 }

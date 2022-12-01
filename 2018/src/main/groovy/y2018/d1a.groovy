@@ -1,7 +1,4 @@
 
-
-//println new File("").path
-
 def x = new File("../../resources/1.txt")
 
 println x.absolutePath

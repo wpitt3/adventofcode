@@ -8,7 +8,7 @@ func day15() {
 
 	fmt.Println("Day 15")
 
-	x := []int64{16,11,15,0,1,7}
+	x := []int64{1,0,15,2,10,13}
 
 	day15a(x)
 	day15b(x)

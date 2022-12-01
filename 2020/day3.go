@@ -6,7 +6,7 @@ import (
 
 
 func day3() {
-	lines, err := readFile("3")
+	lines, err := readFile("../resources/y2020d03.txt")
 	if err != nil { panic(err) }
 
 	trees := convertToTrees(lines)

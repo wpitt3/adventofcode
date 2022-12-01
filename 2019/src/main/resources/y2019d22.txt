@@ -97,4 +97,3 @@ cut 2341
 deal with increment 45
 cut 2217
 deal with increment 13
-deal into new stack

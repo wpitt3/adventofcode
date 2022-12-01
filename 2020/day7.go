@@ -8,7 +8,7 @@ import (
 
 
 func day7() {
-	lines, err := readFile("7")
+	lines, err := readFile("../resources/y2020d07.txt")
 	if err != nil { panic(err) }
 
 	outerToInner := getAllBags(lines)

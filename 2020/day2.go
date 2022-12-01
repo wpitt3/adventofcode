@@ -7,7 +7,7 @@ import (
 
 
 func day2() {
-	lines, err := readFile("2a")
+	lines, err := readFile("../resources/y2020d02.txt")
 	if err != nil { panic(err) }
 	fmt.Println("Day 2")
 	day2a(lines)

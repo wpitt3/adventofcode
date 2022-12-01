@@ -9,7 +9,7 @@ import (
 
 
 func day9() {
-	lines, err := readFile("9")
+	lines, err := readFile("../resources/y2020d09.txt")
 	if err != nil { panic(err) }
 
 	values := parseLines9(lines)

@@ -7,7 +7,7 @@ import (
 )
 
 func day18() {
-	lines, err := readFile("18")
+	lines, err := readFile("../resources/y2020d18.txt")
 	if err != nil { panic(err) }
 	
 

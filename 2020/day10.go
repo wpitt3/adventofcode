@@ -9,13 +9,13 @@ import (
 
 
 func day10() {
-	lines, err := readFile("10")
+	lines, err := readFile("../resources/y2020d10.txt")
 	if err != nil { panic(err) }
 
 	values := parseLines10(lines)
 
 	fmt.Println("Day 10")
-	//day10a(values)
+	day10a(values)
 	day10b(values)
 }
 
