@@ -35,7 +35,7 @@ fun day22b(lines: List<String>) {
     val a = (oneStep-twoStep) * (startIndex-oneStep+deckSize).modInverse(deckSize) % deckSize
     val b = (oneStep-a*startIndex) % deckSize
 
-    println((a.modPow(timesToShuffle, deckSize)*startIndex +
+    println((a.modPow(timesToShuffle, deckSize) * startIndex +
             (a.modPow(timesToShuffle, deckSize) - BigInteger.ONE) * (a - BigInteger.ONE).modInverse(deckSize) * b) % deckSize)
 }
 

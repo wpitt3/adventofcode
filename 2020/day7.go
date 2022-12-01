@@ -63,7 +63,7 @@ func getAllBags(lines []string) map[string][]innerbag {
 		line = strings.ReplaceAll(line, "bag", "")
 		line = strings.ReplaceAll(line, ".", "")
 
-		fromBags := split(line, "contain", "")
+		fromBags := split(line, "contain",  "")
 		outerBag := strings.TrimSpace(fromBags[0])
 		splitInnerBags := split(strings.TrimSpace(fromBags[1]), ", ", "")
 

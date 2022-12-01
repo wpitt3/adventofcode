@@ -15,17 +15,17 @@ func day17() {
 }
 
 func day17a(lines []string) {
-	size := 20
-	offset := 6
+	size := 26
+	offset := 8
 	grid := makeGrid(size)
 	for y, line := range lines {
 		for x, val := range line {
 			if val == '#' {
-				grid[9][x+offset][y+offset] = true
+				grid[9][y+offset][x+offset] = true
 			}
 		}
 	}
-
+	//printGrid(grid, 9, 7, 1)
 	for cycle := 0; cycle < 6; cycle++ {
 		newGrid := makeGrid(size)
 		for x := 1; x < size-1; x++ {
@@ -36,13 +36,14 @@ func day17a(lines []string) {
 			}
 		}
 		grid = newGrid
+		//printGrid(grid, 9, 7, 2+cycle)
 	}
 	fmt.Println(countActive(grid))
 }
 
 func day17b(lines []string) {
-	size := 20
-	offset := 6
+	size := 26
+	offset := 8
 	grid := make4dGrid(size)
 	for y, line := range lines {
 		for x, val := range line {
@@ -96,9 +97,9 @@ func isActive(grid [][][]bool, i int, j int, k int) bool {
 func countActive(grid [][][]bool) int {
 	size := len(grid)
 	total := 0
-	for x := 1; x < size-1; x++ {
-		for y := 1; y < size-1; y++ {
-			for z := 1; z < size-1; z++ {
+	for x := 0; x < size-1; x++ {
+		for y := 0; y < size-1; y++ {
+			for z := 0; z < size-1; z++ {
 				if grid[x][y][z] {
 					total += 1
 				}
@@ -152,4 +153,22 @@ func countActive4d(grid [][][][]bool) int {
 		}
 	}
 	return total
+}
+
+func printGrid(grid [][][]bool, centreZ int, centreXY int, offset int) {
+	for z := -offset; z < offset +1; z++ {
+		fmt.Println()
+		for y := -offset; y < offset+1; y++ {
+			out := ""
+			for x := -offset; x < offset+1; x++ {
+				if grid[z+centreZ][y+centreXY][x+centreXY] {
+					out += "#"
+				} else {
+					out += "."
+				}
+			}
+			fmt.Println(out)
+		}
+	}
+	fmt.Println("-----------------------")
 }

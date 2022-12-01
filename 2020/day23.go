@@ -6,104 +6,80 @@ import (
 )
 
 func day23() {
-	input := toIntList("215694783")
-
-	input2 := toIntList("389125467")
-	for i := 10; i <= 1000000; i ++ {
-		input2 = append(input2, i)
-	}
-	day23a(input)
-	fmt.Println(46978532)
-	//day23b(input2)
+	input := toIntList("247819356")
+	a(input)
+	b(input)
 }
 
-func day23a(cups []int) {
-	index := 0
-	for i := 0; i < 100; i++ {
-		currentCup := cups[index]
-		newCups, next3 := takeNext3(cups, index)
-		target := calcTarget(cups, next3, index)
-		targetIndex := intSpliceIndexOf(newCups, target)
-		cups = flattenSplices([][]int{newCups[:targetIndex+1], next3, newCups[targetIndex+1:]})
-		index = (intSpliceIndexOf(cups, currentCup) + 1) % len(cups)
+func a(input []int) {
+	keyToCup, currentCup := setupCups(input, 0)
+	currentCup = shuffleCups(keyToCup, currentCup, 100)
+	y := keyToCup[1].next
+	for i := 0; i < 8; i++ {
+		fmt.Print(y.id)
+		fmt.Print("")
+		y = y.next
 	}
-
-	indexOf1 := intSpliceIndexOf(cups, 1)
-	fmt.Println(intSpliceToString(flattenSplices([][]int{cups[indexOf1+1:], cups[:indexOf1]})))
+	fmt.Println()
 }
 
-func day23b(cups []int) {
-	index := 0
-	for i := 0; i < 10000; i++ {
-		currentCup := cups[index]
-		newCups, next3 := takeNext3(cups, index)
-		target := calcTarget(cups, next3, index)
-		targetIndex := intSpliceIndexOf(newCups, target)
-		cups = flattenSplices([][]int{newCups[:targetIndex+1], next3, newCups[targetIndex+1:]})
-		index = (intSpliceIndexOf(cups, currentCup) + 1) % len(cups)
-	}
-
-	//indexOf1 := intSpliceIndexOf(cups, 1)
+func b(input []int) {
+	keyToCup, currentCup := setupCups(input, 1_000_000)
+	currentCup = shuffleCups(keyToCup, currentCup, 10_000_000)
+	y := keyToCup[1].next
+	fmt.Println(y.id)
+	fmt.Println(y.next.id)
+	fmt.Println(y.id * y.next.id)
 }
 
-func intSpliceToString(x []int) string {
-	toPrint := ""
-	for _, y := range x {
-		toPrint += strconv.Itoa(y)
-	}
-	return toPrint
+func isPickedUp(x int, y[]int) bool {
+	return x == y[0] || x == y[1] || x == y[2]
 }
 
-func flattenSplices(splices [][]int)[] int {
-	result := []int(nil)
-	for _, splice := range splices {
-		result = append(result, splice...)
+func setupCups(cups []int, total int) (map[int]*Cup, *Cup) {
+	keyToCup := make(map[int]*Cup)
+	startCup := &Cup{cups[0], nil }
+	keyToCup[cups[0]] = startCup
+	currentCup := startCup
+	for i := total; i >= 10; i -- {
+		newCup := &Cup{i, currentCup}
+		currentCup = newCup
+		keyToCup[i] = newCup
 	}
-	return result
+	for i := 8; i > 0; i-- {
+		newCup := &Cup{cups[i], currentCup}
+		currentCup = newCup
+		keyToCup[cups[i]] = newCup
+	}
+	startCup.next = currentCup
+	return keyToCup, startCup
 }
 
-func calcTarget(cups []int, next3 []int, index int) int {
-	target := cups[index] - 1
-	if target < 1 {
-		target += len(cups)
-	}
-	for intSpliceContains(next3, target) {
-		target -= 1
-		if target < 1 {
-			target += len(cups)
+func shuffleCups(keyToCup map[int]*Cup, cup *Cup, times int) *Cup {
+	pickedUp := []int{0, 0, 0}
+	currentCup := cup
+
+	length := len(keyToCup)
+
+	for x := 0; x < times; x++ {
+		cupAfterSelected := currentCup.next
+		for i := 0; i < 3; i++ {
+			pickedUp[i] = cupAfterSelected.id
+			cupAfterSelected = cupAfterSelected.next
 		}
-	}
-	return target
-}
 
-func intSpliceIndexOf(input []int, index int) int {
-	for i, x := range input {
-		if x == index {
-			return i
+		searchingFor := (currentCup.id+length-2)%length + 1
+		for isPickedUp(searchingFor, pickedUp) {
+			searchingFor = (searchingFor+length-2)%length + 1
 		}
+
+		currentCup.next = cupAfterSelected
+		keyToCup[pickedUp[2]].next = keyToCup[searchingFor].next
+		keyToCup[searchingFor].next = keyToCup[pickedUp[0]]
+
+		currentCup = currentCup.next
 	}
-	return -1
-}
-
-
-func intSpliceContains(input []int, index int) bool {
-	for _, x := range input {
-		if x == index {
-			return true
-		}
-	}
-	return false
-}
-
-func takeNext3(input []int, index int) ([]int, []int) {
-	from := index+1
-	to := index+4
-
-	if index + 4 > len(input) {
-		return input[to%len(input):from], append(cloneIntSlice(input)[from:], input[:(to%len(input))]...)
-	} else {
-		return append(cloneIntSlice(input)[:from], input[to:]...), input[from:to]
-	}
+	return keyToCup[1]
 }
 
 func toIntList(line string) []int {
@@ -119,8 +95,7 @@ func toIntList(line string) []int {
 	return cards
 }
 
-//type T int
-
-func cloneIntSlice(a []int) []int{
-	return append([]int(nil), a...)
+type Cup struct {
+	id     int
+	next     *Cup
 }

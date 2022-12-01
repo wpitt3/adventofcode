@@ -88,6 +88,14 @@ func day20b(lines []string) {
 	}
 
 	monster := [][]int{{0, 18}, {1, 0}, {1, 5}, {1, 6}, {1, 11}, {1, 12}, {1, 17}, {1, 18}, {1, 19}, {2, 1}, {2, 4}, {2, 7}, {2, 10}, {2, 13}, {2, 16}}
+	flipped := flip(monster)
+	monsters := make([][][]int, 0)
+	for i := 0; i < 4; i++ {
+		monster = rotate(monster)
+		flipped = rotate(flipped)
+		monsters = append(monsters, monster)
+		monsters = append(monsters, flipped)
+	}
 
 	totalMonsters := 0
 	totalSea := 0
@@ -96,12 +104,47 @@ func day20b(lines []string) {
 			if runeGrid[i][j] == '#' {
 				totalSea++
 			}
-			if checkGridForMonster(monster, runeGrid, i, j) {
-				totalMonsters += 1
+			for x := 0; x < 8; x++ {
+				if checkGridForMonster(monsters[x], runeGrid, i, j) {
+					totalMonsters += 1
+				}
 			}
 		}
 	}
+
+	println(totalMonsters)
+	println(totalSea)
 	fmt.Println(totalSea - totalMonsters*15)
+}
+
+func rotate(monster [][]int) [][]int {
+	maxY := 0
+	for i := 0; i < len(monster); i++ {
+		if maxY < monster[i][0] {
+			maxY = monster[i][0]
+		}
+	}
+
+	newMonster := make([][]int, len(monster))
+	for i := 0; i < len(monster); i++ {
+		newMonster[i] = []int{monster[i][1], maxY - monster[i][0]}
+	}
+	return newMonster
+}
+
+func flip(monster [][]int) [][]int {
+	maxY := 0
+	for i := 0; i < len(monster); i++ {
+		if maxY < monster[i][0] {
+			maxY = monster[i][0]
+		}
+	}
+
+	newMonster := make([][]int, len(monster))
+	for i := 0; i < len(monster); i++ {
+		newMonster[i] = []int{maxY - monster[i][0], monster[i][1]}
+	}
+	return newMonster
 }
 
 func checkGridForMonster(monster [][]int, runeGrid [][]rune, i int, j int) bool {

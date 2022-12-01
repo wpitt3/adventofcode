@@ -8,9 +8,9 @@ fun main (){
 
 class Day12() {
     fun inputMoons() {
-        val xMovements = listOf(-19, -9, -4, 1).map{Movement(it, 0)}
-        val yMovements = listOf(-4, 8, 5, 9).map{Movement(it, 0)}
-        val zMovements = listOf(2, -16, -11, -13).map{Movement(it, 0)}
+        val xMovements = listOf(0, -10, 9, 6).map{Movement(it, 0)}
+        val yMovements = listOf(4, -6, -16, -1).map{Movement(it, 0)}
+        val zMovements = listOf(0, -14, -3, 2).map{Movement(it, 0)}
         println (partA(xMovements, yMovements, zMovements))
         println (partB(xMovements, yMovements, zMovements))
     }
